@@ -45,18 +45,24 @@ class PatientLearner:
         for pair in self.read:
             yield pair
 
-    def _isScreenActive(self):
-        # check exit code?
-        shell(['xset', 'q',
-            '|', 'grep', 'Monitor',
-            '|', 'grep', '-q', 'On'])
+    def _isIdle(self):
+        cmd = 'xset q | grep Monitor | grep -q On'
+        EC = shell(cmd, shell=True).returncode
+
+        idle = int(shell(
+                ['xprintidle'], capture_output=True
+                ).stdout.decode('utf-8').strip())
+
+        if EC or idle > 6e5: return True
+        return False
 
     def train(self, delay):
         try:
             gen = self._genDict()
             for pair in gen:
                 self._method(pair)
-                time.sleep(delay)
+                while self._isIdle(): time.sleep(delay)
+                else: time.sleep(delay)
         except KeyboardInterrupt:
             if self.edit:
                 with open(self.file, 'w') as fp:

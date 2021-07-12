@@ -17,9 +17,14 @@ class PatientLearner:
     def _justNotify(self, pair):
         # Ubuntu's Notify OSD and GNOME Shell
         # both ignore the timeout parameter.
+        # Instead, we use '--hint=int:transient:1'
+        # to remove the notification more quickly.
         shell([
-            'notify-send', f'--icon={Path.cwd()}/logo.png',
-            f'--expire-time={self.time*1000}', f'{pair}'])
+            'notify-send',
+            f'--icon={Path.cwd()}/logo.png',
+            '--hint=int:transient:1',
+            f'--expire-time={self.time*1000}',
+            f'{pair}'])
 
     def _windowEdit(self, pair):
         out = shell([

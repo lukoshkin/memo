@@ -1,0 +1,22 @@
+[Unit]
+Description=Test
+After=multi-user.target
+
+[Service]
+Type=simple
+User=lukoshkin
+Group=lukoshkin
+
+# In case user logs out, the script execution will continue after their login
+# Restart=always
+# RestartSec=3
+
+WorkingDirectory=/home/lukoshkin/Workspace/plugins/sh-plugins/memo/base
+EnvironmentFile=/home/lukoshkin/Workspace/plugins/sh-plugins/memo/base/env.ctl
+ExecStart=/home/lukoshkin/BuildPacks/miniconda3/bin/python /home/lukoshkin/Workspace/plugins/sh-plugins/memo/base/main.py /home/lukoshkin/Workspace/plugins/sh-plugins/memo/trash/dict
+
+# Environment="DISPLAY=:0"
+# "XAUTHORITY=/run/user/1000/gdm/Xauthority"
+
+[Install]
+WantedBy=multi-user.target

@@ -1,22 +1,42 @@
+# All fields in a unit file are case sensitive.
+
 [Unit]
 Description=Test
 After=multi-user.target
 
+
 [Service]
-Type=simple
-User=lukoshkin
-Group=lukoshkin
+# 'simple' is the default type, so the next line is commented out.
+# Type=simple
 
-# In case user logs out, the script execution will continue after their login
-# Restart=always
-# RestartSec=3
+User=lukovna
+Group=lukovna
 
-WorkingDirectory=/home/lukoshkin/Workspace/plugins/sh-plugins/memo/base
-EnvironmentFile=/home/lukoshkin/Workspace/plugins/sh-plugins/memo/base/env.ctl
-ExecStart=/home/lukoshkin/BuildPacks/miniconda3/bin/python /home/lukoshkin/Workspace/plugins/sh-plugins/memo/base/main.py /home/lukoshkin/Workspace/plugins/sh-plugins/memo/trash/dict
+# In case a user logs out,
+# the script execution will continue after their login
+Restart=always
+# Restart=on-failure
+RestartSec=3
 
-# Environment="DISPLAY=:0"
-# "XAUTHORITY=/run/user/1000/gdm/Xauthority"
+
+# The first way of exporting the environment allows to use the regular form
+# of notifications in notify-send. But it hangs on the second notification
+# if the user is idle. So, the second way is preferable.
+
+# Curiously, exporting just the display variable makes notifications
+# a bit smaller and appear on the left of the screen that is in focus.
+
+# EnvironmentFile=-/home/lukovna/Workspace/memo/env.ctl
+Environment="DISPLAY=:0"
+
+WorkingDirectory=/home/lukovna/Workspace/memo/base
+# '-' in the line above ensures that no error is generated
+# if the env.file doesn't exist.
+
+ExecStart=/home/lukovna/miniconda/bin/python \
+/home/lukovna/Workspace/memo/base/main.py \
+/home/lukovna/Workspace/memo/trash/dict
+
 
 [Install]
 WantedBy=multi-user.target

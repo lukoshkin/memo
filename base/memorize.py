@@ -21,8 +21,8 @@ class PatientLearner:
         # to remove the notification more quickly.
         shell([
             'notify-send',
-            f'--icon={Path.cwd()}/logo.png',
             '--hint=int:transient:1',
+            f'--icon={Path.cwd()}/logo.png',
             f'--expire-time={self.time*1000}',
             f'{pair}'])
 

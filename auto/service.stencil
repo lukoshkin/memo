@@ -1,0 +1,31 @@
+## All fields in a unit file are case sensitive.
+[Unit]
+Description=Passive Vocabulary Expansion
+
+[Install]
+WantedBy=multi-user.target
+
+[Service]
+## 'simple' is the default type, so the next line is commented out.
+# Type=simple
+
+## In case a user logs out,
+## the script execution will continue after their login
+# Restart=always
+Restart=on-failure
+RestartSec=3
+
+## The first way of exporting the environment allows to use the regular form
+## of notifications in notify-send. But it hangs on the second notification
+## if the user is idle. So, the second way is preferable.
+
+## Curiously, exporting just the display variable makes notifications
+## a bit smaller and appear on the left of the screen that is in focus.
+
+## After the creation of env.ctl with
+## `systemctl --user show-environment > env.ctl`
+# EnvironmentFile=-/home/lukoshkin/Workspace/plugins/sh-plugins/memo/base/env.ctl
+## '-' in the line above ensures that no error is generated
+## if the env.file doesn't exist.
+Environment="DISPLAY=:0"
+# "DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus"

@@ -18,7 +18,7 @@ class PatientLearner:
         # Ubuntu's Notify OSD and GNOME Shell
         # both ignore the timeout parameter.
         # Instead, we use '--hint=int:transient:1'
-        # to remove the notification more quickly.
+        # not to keep them in the notification tray.
         shell([
             'notify-send',
             '--hint=int:transient:1',

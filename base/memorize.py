@@ -14,6 +14,9 @@ class PatientLearner:
         if just_notify: self._method = self._justNotify
         else: self._method = self._windowEdit
 
+        out = shell(['which', 'xprintidle'], capture_output=True)
+        self.missing_xprintidle = True if out.returncode > 0 else False
+
     def _justNotify(self, pair):
         # Ubuntu's Notify OSD and GNOME Shell
         # both ignore the timeout parameter.
@@ -51,6 +54,7 @@ class PatientLearner:
             yield pair
 
     def _isIdle(self):
+        if self.missing_xprintidle: return False
         cmd = 'xset q | grep Monitor | grep -q On'
         EC = shell(cmd, shell=True).returncode
 

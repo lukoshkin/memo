@@ -2,18 +2,19 @@
 
 add_service () {
   [[ -z $1 ]] && { echo Specify the absolute path to a dictionary.; exit 1; }
-  local path2vocab=$1
+  local path2vocab="$1"
 
   cat /dev/null > memo.service
 
   memoservice=$(cat auto/service.stencil)
-  memoservice+="\n
-  User=$(whoami)
-  WorkingDirectory=$PWD/base
+  memoservice+="
 
-  ExecStart=$(which python) \\
-  $PWD/base/main.py \\
-  $path2vocab"
+User=$(whoami)
+WorkingDirectory=$PWD/base
+
+ExecStart=$(which python3) \\
+$PWD/base/main.py \\
+$path2vocab"
 
   echo -e "$memoservice" >> memo.service
   chmod +x memo.service
@@ -37,18 +38,15 @@ add_service () {
 add_anacron_job () {
   [[ -z $1 ]] && exit
   local collection_id=$1
-  cmd="bash $PWD/auto/update-dict.sh $collection_id\n"
-
-  period=$2
-  delay=15
+  cmd="/bin/bash $PWD/auto/update-dict.sh $collection_id"
 
   if ! grep -q "update-dict.memo" /etc/anacrontab
   then
-    echo -e "$period $delay update-dict.memo $cmd" \
+    echo -e "@monthly 15 update-dict.memo $cmd\n" \
       | sudo tee -a /etc/anacrontab > /dev/null
-    [[ $? -eq 0 ]] && echo Success! Added anacron job!
+    [[ $? -eq 0 ]] && echo -e '\nSuccess! Added anacron job!'
   else
-    echo Anacron job is already set!
+    echo -e '\nAnacron job is already set!'
   fi
 }
 
@@ -64,11 +62,12 @@ then
 fi
 
 [[ $# -ne 1 ]] && { echo The script takes exactly one argument; exit 1; }
-{ [[ -f $1 ]] && code=1; } || { bash script.sh $1 2> /dev/null && code=2; } \
+
+{ [[ -f $1 ]] && code=1; } || { bash auto/update-dict.sh $1 && code=2; } \
   || { echo Neither a path to vocabulary nor a collection id passed.; exit 1; }
 
-[[ $code -eq 1 ]] && path2vocab=$1
-[[ $code -eq 2 ]] && path2vocab=$PWD/dict/vocabulary.txt && collection_id=$1
+[[ $code -eq 1 ]] && path2vocab="$1"
+[[ $code -eq 2 ]] && path2vocab="$PWD"/dict/vocabulary.txt && collection_id=$1
 
-add_service $path2vocab
+add_service "$path2vocab"
 add_anacron_job $collection_id

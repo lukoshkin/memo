@@ -9,10 +9,10 @@ WantedBy=multi-user.target
 ## 'simple' is the default type, so the next line is commented out.
 # Type=simple
 
-## In case a user logs out,
-## the script execution will continue after their login
-# Restart=always
-Restart=on-failure
+## 'on-failure' vs 'always':
+## In case a user logs out, the latter will ensure that
+## the script execution continues after their login.
+Restart=always
 RestartSec=3
 
 ## The first way of exporting the environment allows to use the regular form
@@ -21,11 +21,18 @@ RestartSec=3
 
 ## Curiously, exporting just the display variable makes notifications
 ## a bit smaller and appear on the left of the screen that is in focus.
+## However, this is the case only for a few laptops. It may also happen
+## that without exporting DBUS_SESSION_BUS_ADDRESS nothing will work.
 
 ## After the creation of env.ctl with
 ## `systemctl --user show-environment > env.ctl`
-# EnvironmentFile=-/home/lukoshkin/Workspace/plugins/sh-plugins/memo/base/env.ctl
+# EnvironmentFile=-/path/to/generated/env.ctl
 ## '-' in the line above ensures that no error is generated
-## if the env.file doesn't exist.
+## if the environement file 'env.ctl' doesn't exist.
+## Several environemnt variables may be listed
+## separated by whitespaces.
 Environment="DISPLAY=:0"
-# "DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus"
+
+## Note, if making a user service (not a system service),
+## one don't have to specify DISPLAY and should not to put
+## User and Group in the unit file.
